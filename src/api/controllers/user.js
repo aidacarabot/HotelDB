@@ -5,18 +5,16 @@ const { generateSign } = require("../../config/jwt");
 //! REGISTER USER
 const register = async (req, res, next) => {
   try {
+    const { userName, password } = req.body;
+
     // Verifica si el nombre de usuario ya existe
-    const userDuplicated = await User.findOne({ userName: req.body.userName });
+    const userDuplicated = await User.findOne({ userName });
     if (userDuplicated) {
       return res.status(400).json("That username already exists. Please try another one.");
     }
 
     // Crea un nuevo usuario con la contraseña sin hashear; el middleware pre('save') la hasheará automáticamente
-    const newUser = new User({
-      userName: req.body.userName,
-      password: req.body.password, // No hashear aquí
-      role: 'user' // Establece el rol por defecto como 'user'
-    });
+    const newUser = new User({ userName, password, role: 'user' });
 
     const userSaved = await newUser.save();
     return res.status(201).json(userSaved);
@@ -29,14 +27,13 @@ const register = async (req, res, next) => {
 //!USER LOGIN
 const login = async (req, res, next) => {
   try {
-    const user = await User.findOne({ userName: req.body.userName });
+    const { userName, password } = req.body;
+    const user = await User.findOne({ userName });
 
     if (user) {
-      if (bcrypt.compareSync(req.body.password, user.password)) {
+      if (bcrypt.compareSync(password, user.password)) {
         // Genera un token JWT
         const token = generateSign(user._id);
-        
-        // Retorna el usuario y el token
         return res.status(200).json({ user, token });
       } else {
         return res.status(400).json("The username or password is incorrect.");
@@ -52,7 +49,6 @@ const login = async (req, res, next) => {
 //!UPDATE USER ROLE (Admins only)
 const updateUserRole = async (req, res, next) => {
   try {
-    // Solo los admins pueden cambiar el rol de un usuario
     if (req.user.role !== 'admin') {
       return res.status(403).json("Access denied. Admins only.");
     }
@@ -60,16 +56,17 @@ const updateUserRole = async (req, res, next) => {
     const { id } = req.params;
     const { role } = req.body;
 
-    // Asegúrate de que el rol proporcionado sea válido ('admin' o 'user')
     if (!['admin', 'user'].includes(role)) {
       return res.status(400).json("Invalid role. Role must be 'admin' or 'user'.");
     }
 
-    // Actualiza el rol del usuario
-    const userUpdated = await User.findByIdAndUpdate(id, { role }, { new: true });
-    if (!userUpdated) return res.status(404).json("User not found.");
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json("User not found.");
 
-    return res.status(200).json(userUpdated);
+    user.role = role;
+    await user.save();
+
+    return res.status(200).json(user);
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -80,7 +77,6 @@ const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Solo los admins pueden eliminar cualquier usuario o un usuario puede eliminar su propia cuenta
     if (req.user.role === 'admin' || req.user.id === id) {
       const userDeleted = await User.findByIdAndDelete(id);
       if (!userDeleted) return res.status(404).json("User not found.");
@@ -94,4 +90,4 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, updateUserRole, deleteUser }; //exportamos para usarlo en routes
+module.exports = { register, login, updateUserRole, deleteUser };

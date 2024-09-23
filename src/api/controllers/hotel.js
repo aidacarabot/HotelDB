@@ -3,9 +3,10 @@ const Hotel = require("../models/hotel");
 //! Create a new Hotel
 const createHotel = async (req, res, next) => {
   try {
-    const newHotel = new Hotel(req.body);
+    const { name, location, client, user } = req.body;
+    const newHotel = new Hotel({ name, location, client, user });
     await newHotel.save();
-    res.status(201).json(newHotel);  // Envía una respuesta con el hotel creado
+    res.status(201).json(newHotel);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -14,10 +15,9 @@ const createHotel = async (req, res, next) => {
 //! Get all hotels
 const getAllHotels = async (req, res, next) => {
   try {
-      // Popula client con su nombre y user con su nombre de usuario
       const hotels = await Hotel.find()
-        .populate({ path: 'client', select: 'name -_id' })  // Popula el nombre del cliente
-        .populate({ path: 'user', select: 'userName -_id' }); // Popula el nombre de usuario
+        .populate({ path: 'client', select: 'name -_id' })
+        .populate({ path: 'user', select: 'userName -_id' });
       res.status(200).json(hotels);
   } catch (error) {
       res.status(500).json({ message: error.message });
@@ -28,8 +28,8 @@ const getAllHotels = async (req, res, next) => {
 const getHotelById = async (req, res, next) => {
   try {
       const hotel = await Hotel.findById(req.params.id)
-        .populate({ path: 'client', select: 'name -_id' })  // Popula el nombre del cliente
-        .populate({ path: 'user', select: 'userName -_id' }); // Popula el nombre de usuario
+        .populate({ path: 'client', select: 'name -_id' })
+        .populate({ path: 'user', select: 'userName -_id' });
       if (!hotel) {
           return res.status(404).json({ message: 'Hotel not found' });
       }
@@ -42,13 +42,19 @@ const getHotelById = async (req, res, next) => {
 //! Update a hotel by ID
 const updateHotel = async (req, res, next) => {
   try {
-      const updatedHotel = await Hotel.findByIdAndUpdate(req.params.id, req.body, { new: true })
-        .populate({ path: 'client', select: 'name -_id' })  // Popula el nombre del cliente
-        .populate({ path: 'user', select: 'userName -_id' }); // Popula el nombre de usuario
-      if (!updatedHotel) {
+      const hotel = await Hotel.findById(req.params.id);
+      
+      if (!hotel) {
           return res.status(404).json({ message: 'Hotel not found' });
       }
-      res.status(200).json(updatedHotel);
+
+      const { name, location } = req.body;
+
+      hotel.name = name || hotel.name;
+      hotel.location = location || hotel.location;
+
+      await hotel.save();
+      res.status(200).json(hotel);
   } catch (error) {
       res.status(500).json({ message: error.message });
   }
