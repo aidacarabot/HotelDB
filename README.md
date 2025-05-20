@@ -1,302 +1,300 @@
 # 🏨 HotelDB API
 
-HotelDB API es un sistema de gestión de hoteles que permite la creación, actualización, eliminación y consulta de hoteles y clientes asociados. Este proyecto está construido con Node.js, Express y MongoDB, utilizando Mongoose para la gestión de la base de datos.
+HotelDB API is a hotel management system that allows creating, updating, deleting, and querying hotels and associated clients. This project is built with Node.js, Express, and MongoDB, using Mongoose for database management.
 
-## ✨ **Características**
+## ✨ **Features**
 
-- 🏢 **Gestión de Hoteles:** CRUD (Crear, Leer, Actualizar, Eliminar) de hoteles.
-- 👥 **Gestión de Clientes:** CRUD de clientes asociados a los hoteles.
-- 🔒 **Autenticación y Autorización de Usuarios:** Control de acceso basado en roles (admin y user) con JWT para la autenticación.
-- 🛠️ **Integración Sencilla:** Fácil integración con aplicaciones frontend.
+- 🏢 **Hotel Management:** CRUD (Create, Read, Update, Delete) operations for hotels.
+- 👥 **Client Management:** CRUD for clients associated with hotels.
+- 🔒 **User Authentication and Authorization:** Role-based access control (admin and user) with JWT for authentication.
+- 🛠️ **Easy Integration:** Simple integration with frontend applications.
 
-## ⚙️ **Instalación**
+## ⚙️ **Installation**
 
-1. **Clona este repositorio:**
+1. **Clone this repository:**
     ```bash
     git clone https://github.com/aidact3/HotelDB.git
     ```
-2. **Navega al directorio del proyecto:**
+2. **Navigate to the project directory:**
     ```bash
     cd HotelDB
     ```
-3. **Instala las dependencias:**
+3. **Install dependencies:**
     ```bash
     npm install
     ```
-4. **Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:**
+4. **Create a `.env` file in the root with the following variables:**
     ```
     DB_URL=mongodb://localhost:27017/hoteldb
     JWT_SECRET=your_jwt_secret
     ```
 
-5. **Ejecuta el servidor:**
+5. **Run the server:**
     ```bash
     npm start
     ```
 
 ## 📋 **Endpoints**
 
-### **Usuarios**
+### **Users**
 
-- **🔐 Registro de Usuario**
+- **🔐 User Registration**
     - **POST** `/api/users/register`
-    - **Descripción:** Registra un nuevo usuario en el sistema.
+    - **Description:** Registers a new user in the system.
     - **Body:**
         ```json
         {
-            "userName": "nombre_de_usuario",
-            "password": "contraseña"
+            "userName": "username",
+            "password": "password"
         }
         ```
-    - **Respuesta Exitosa:**
+    - **Successful Response:**
         ```json
         {
-            "_id": "id_del_usuario",
-            "userName": "nombre_de_usuario",
+            "_id": "user_id",
+            "userName": "username",
             "role": "user"
         }
         ```
 
-- **🔓 Login de Usuario**
+- **🔓 User Login**
     - **POST** `/api/users/login`
-    - **Descripción:** Inicia sesión en el sistema y devuelve un token JWT.
+    - **Description:** Logs in and returns a JWT token.
     - **Body:**
         ```json
         {
-            "userName": "nombre_de_usuario",
-            "password": "contraseña"
+            "userName": "username",
+            "password": "password"
         }
         ```
-    - **Respuesta Exitosa:**
+    - **Successful Response:**
         ```json
         {
             "user": {
-                "_id": "id_del_usuario",
-                "userName": "nombre_de_usuario"
+                "_id": "user_id",
+                "userName": "username"
             },
-            "token": "token_jwt"
+            "token": "jwt_token"
         }
         ```
 
-- **🔄 Actualizar Rol de Usuario**
+- **🔄 Update User Role**
     - **PUT** `/api/users/role/:id`
-    - **Descripción:** Actualiza el rol de un usuario (solo admins).
+    - **Description:** Updates user role (admins only).
     - **Headers:** `Authorization: Bearer <token>`
     - **Body:**
         ```json
         {
-            "role": "admin" // o "user"
+            "role": "admin" // or "user"
         }
         ```
-    - **Respuesta Exitosa:**
+    - **Successful Response:**
         ```json
         {
-            "_id": "id_del_usuario",
-            "userName": "nombre_de_usuario",
+            "_id": "user_id",
+            "userName": "username",
             "role": "admin"
         }
         ```
 
-- **🗑️ Eliminar Usuario**
+- **🗑️ Delete User**
     - **DELETE** `/api/users/:id`
-    - **Descripción:** Elimina un usuario (un admin puede eliminar cualquier usuario, un usuario puede eliminarse a sí mismo).
+    - **Description:** Deletes a user (an admin can delete any user; a user can delete themselves).
     - **Headers:** `Authorization: Bearer <token>`
-    - **Respuesta Exitosa:**
+    - **Successful Response:**
         ```json
         {
             "message": "User deleted successfully."
         }
         ```
 
-### **Clientes**
+### **Clients**
 
-- **➕ Crear Cliente**
+- **➕ Create Client**
     - **POST** `/api/clients`
-    - **Descripción:** Crea un nuevo cliente asociado a un usuario.
+    - **Description:** Creates a new client associated with a user.
     - **Body:**
         ```json
         {
-            "name": "nombre_del_cliente",
-            "email": "email_del_cliente",
-            "phone": "telefono_del_cliente",
-            "user": "id_del_usuario_asociado"
+            "name": "client_name",
+            "email": "client_email",
+            "phone": "client_phone",
+            "user": "associated_user_id"
         }
         ```
-    - **Respuesta Exitosa:**
+    - **Successful Response:**
         ```json
         {
-            "_id": "id_del_cliente",
-            "name": "nombre_del_cliente",
-            "email": "email_del_cliente",
-            "phone": "telefono_del_cliente",
-            "user": "id_del_usuario_asociado"
+            "_id": "client_id",
+            "name": "client_name",
+            "email": "client_email",
+            "phone": "client_phone",
+            "user": "associated_user_id"
         }
         ```
 
-- **📄 Obtener Todos los Clientes**
+- **📄 Get All Clients**
     - **GET** `/api/clients`
-    - **Descripción:** Obtiene la lista de todos los clientes.
-    - **Respuesta Exitosa:**
+    - **Description:** Gets a list of all clients.
+    - **Successful Response:**
         ```json
         [
             {
-                "_id": "id_del_cliente",
-                "name": "nombre_del_cliente",
-                "email": "email_del_cliente",
-                "phone": "telefono_del_cliente",
+                "_id": "client_id",
+                "name": "client_name",
+                "email": "client_email",
+                "phone": "client_phone",
                 "user": {
-                    "userName": "nombre_de_usuario"
+                    "userName": "username"
                 }
-            },
-            // Otros clientes...
+            }
         ]
         ```
 
-- **🔍 Obtener Cliente por ID**
+- **🔍 Get Client by ID**
     - **GET** `/api/clients/:id`
-    - **Descripción:** Obtiene los detalles de un cliente por su ID.
-    - **Respuesta Exitosa:**
+    - **Description:** Gets details of a client by ID.
+    - **Successful Response:**
         ```json
         {
-            "_id": "id_del_cliente",
-            "name": "nombre_del_cliente",
-            "email": "email_del_cliente",
-            "phone": "telefono_del_cliente",
+            "_id": "client_id",
+            "name": "client_name",
+            "email": "client_email",
+            "phone": "client_phone",
             "user": {
-                "userName": "nombre_de_usuario"
+                "userName": "username"
             }
         }
         ```
 
-- **🔄 Actualizar Cliente**
+- **🔄 Update Client**
     - **PUT** `/api/clients/:id`
-    - **Descripción:** Actualiza los datos de un cliente.
-    - **Body:** Los campos que deseas actualizar.
-    - **Respuesta Exitosa:**
+    - **Description:** Updates client data.
+    - **Body:** Fields to update.
+    - **Successful Response:**
         ```json
         {
-            "_id": "id_del_cliente",
-            "name": "nombre_del_cliente_actualizado",
-            "email": "email_del_cliente_actualizado",
-            "phone": "telefono_del_cliente_actualizado",
+            "_id": "client_id",
+            "name": "updated_client_name",
+            "email": "updated_client_email",
+            "phone": "updated_client_phone",
             "user": {
-                "userName": "nombre_de_usuario"
+                "userName": "username"
             }
         }
         ```
 
-- **🗑️ Eliminar Cliente**
+- **🗑️ Delete Client**
     - **DELETE** `/api/clients/:id`
-    - **Descripción:** Elimina un cliente por su ID.
-    - **Respuesta Exitosa:**
+    - **Description:** Deletes a client by ID.
+    - **Successful Response:**
         ```json
         {
             "message": "Client deleted successfully."
         }
         ```
 
-### **Hoteles**
+### **Hotels**
 
-- **🏨 Crear Hotel**
+- **🏨 Create Hotel**
     - **POST** `/api/hotels`
-    - **Descripción:** Crea un nuevo hotel.
+    - **Description:** Creates a new hotel.
     - **Body:**
         ```json
         {
-            "name": "nombre_del_hotel",
-            "city": "ciudad_del_hotel",
-            "country": "pais_del_hotel",
-            "client": "id_del_cliente_asociado",
-            "user": "id_del_usuario_asociado"
+            "name": "hotel_name",
+            "city": "hotel_city",
+            "country": "hotel_country",
+            "client": "associated_client_id",
+            "user": "associated_user_id"
         }
         ```
-    - **Respuesta Exitosa:**
+    - **Successful Response:**
         ```json
         {
-            "_id": "id_del_hotel",
-            "name": "nombre_del_hotel",
-            "city": "ciudad_del_hotel",
-            "country": "pais_del_hotel",
-            "client": "id_del_cliente_asociado",
-            "user": "id_del_usuario_asociado"
+            "_id": "hotel_id",
+            "name": "hotel_name",
+            "city": "hotel_city",
+            "country": "hotel_country",
+            "client": "associated_client_id",
+            "user": "associated_user_id"
         }
         ```
 
-- **📄 Obtener Todos los Hoteles**
+- **📄 Get All Hotels**
     - **GET** `/api/hotels`
-    - **Descripción:** Obtiene la lista de todos los hoteles.
-    - **Respuesta Exitosa:**
+    - **Description:** Gets a list of all hotels.
+    - **Successful Response:**
         ```json
         [
             {
-                "_id": "id_del_hotel",
-                "name": "nombre_del_hotel",
-                "city": "ciudad_del_hotel",
-                "country": "pais_del_hotel",
+                "_id": "hotel_id",
+                "name": "hotel_name",
+                "city": "hotel_city",
+                "country": "hotel_country",
                 "client": {
-                    "name": "nombre_del_cliente"
+                    "name": "client_name"
                 },
                 "user": {
-                    "userName": "nombre_de_usuario"
+                    "userName": "username"
                 }
-            },
-            // Otros hoteles...
+            }
         ]
         ```
 
-- **🔍 Obtener Hotel por ID**
+- **🔍 Get Hotel by ID**
     - **GET** `/api/hotels/:id`
-    - **Descripción:** Obtiene los detalles de un hotel por su ID.
-    - **Respuesta Exitosa:**
+    - **Description:** Gets details of a hotel by ID.
+    - **Successful Response:**
         ```json
         {
-            "_id": "id_del_hotel",
-            "name": "nombre_del_hotel",
-            "city": "ciudad_del_hotel",
-            "country": "pais_del_hotel",
+            "_id": "hotel_id",
+            "name": "hotel_name",
+            "city": "hotel_city",
+            "country": "hotel_country",
             "client": {
-                "name": "nombre_del_cliente"
+                "name": "client_name"
             },
             "user": {
-                "userName": "nombre_de_usuario"
+                "userName": "username"
             }
         }
         ```
 
-- **🔄 Actualizar Hotel**
+- **🔄 Update Hotel**
     - **PUT** `/api/hotels/:id`
-    - **Descripción:** Actualiza los datos de un hotel.
-    - **Body:** Los campos que deseas actualizar.
-    - **Respuesta Exitosa:**
+    - **Description:** Updates hotel data.
+    - **Body:** Fields to update.
+    - **Successful Response:**
         ```json
         {
-            "_id": "id_del_hotel",
-            "name": "nombre_del_hotel_actualizado",
-            "city": "ciudad_del_hotel_actualizado",
-            "country": "pais_del_hotel_actualizado",
+            "_id": "hotel_id",
+            "name": "updated_hotel_name",
+            "city": "updated_hotel_city",
+            "country": "updated_hotel_country",
             "client": {
-                "name": "nombre_del_cliente"
+                "name": "client_name"
             },
             "user": {
-                "userName": "nombre_de_usuario"
+                "userName": "username"
             }
         }
         ```
 
-- **🗑️ Eliminar Hotel**
+- **🗑️ Delete Hotel**
     - **DELETE** `/api/hotels/:id`
-    - **Descripción:** Elimina un hotel por su ID.
-    - **Respuesta Exitosa:**
+    - **Description:** Deletes a hotel by ID.
+    - **Successful Response:**
         ```json
         {
             "message": "Hotel deleted successfully."
         }
         ```
 
-## **🛠️ Tecnologías Utilizadas**
+## **🛠️ Technologies Used**
 
-- **Node.js:** Entorno de ejecución para el servidor.
-- **Express:** Framework para la creación de APIs.
-- **MongoDB:** Base de datos NoSQL para almacenar los datos de los clientes y hoteles.
-- **Mongoose:** ODM para interactuar con MongoDB de forma más sencilla.
-- **JWT:** Para la autenticación de usuarios.
+- **Node.js:** Server runtime environment.
+- **Express:** Framework for building APIs.
+- **MongoDB:** NoSQL database to store client and hotel data.
+- **Mongoose:** ODM to interact with MongoDB easily.
+- **JWT:** For user authentication.
